@@ -89,7 +89,7 @@ class UpBasicblock(nn.Module):
 		return self.residual_layer(input) + self.conv_block(input)
 
 
-class Bottleneck(nn.Module):
+class  Bottleneck(nn.Module):
 	""" Pre-activation residual block
 	Identity Mapping in Deep Residual Networks
 	ref https://arxiv.org/abs/1603.05027
@@ -100,14 +100,20 @@ class Bottleneck(nn.Module):
 		self.expansion = 4
 		self.downsample = downsample
 		if self.downsample is not None:
+			# 在使用上，stride为2 时，downsample为1，stride为1 时，downsample为None，
+			#  图片大小变为1/2，通道数变化
 			self.residual_layer = nn.Conv2d(inplanes, planes * self.expansion,
 																			kernel_size=1, stride=stride)
 		conv_block = []
 		conv_block += [norm_layer(inplanes),
 									 nn.ReLU(inplace=True),
+									 # 图片大小不变，通道数变化
 									 nn.Conv2d(inplanes, planes, kernel_size=1, stride=1)]
 		conv_block += [norm_layer(planes),
 									 nn.ReLU(inplace=True),
+									 # 在使用上，stride为2 时，downsample为1，stride为1 时，downsample为None，
+									 # stride为2，尺寸变化为1/2，通道数变化为1/4
+									 # stride为1 时，尺寸变化为1，通道数变化为1
 									 ConvLayer(planes, planes, kernel_size=3, stride=stride)]
 		conv_block += [norm_layer(planes),
 									 nn.ReLU(inplace=True),
@@ -173,6 +179,7 @@ class UpsampleConvLayer(torch.nn.Module):
 		super(UpsampleConvLayer, self).__init__()
 		self.upsample = upsample
 		if upsample:
+			# 上采样
 			self.upsample_layer = torch.nn.Upsample(scale_factor=upsample)
 		self.reflection_padding = int(np.floor(kernel_size / 2))
 		if self.reflection_padding != 0:
