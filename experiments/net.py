@@ -88,7 +88,7 @@ class UpBasicblock(nn.Module):
 	def forward(self, input):
 		return self.residual_layer(input) + self.conv_block(input)
 
-
+# 从尺寸上来说downsample如果为空，就不下采样，如果不为空，就2倍下采样
 class  Bottleneck(nn.Module):
 	""" Pre-activation residual block
 	Identity Mapping in Deep Residual Networks
